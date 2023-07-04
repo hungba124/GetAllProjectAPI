@@ -1,4 +1,5 @@
 global using LangBatDongSan34.Models;
+global using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
