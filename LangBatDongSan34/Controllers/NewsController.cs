@@ -2,6 +2,7 @@
 using LangBatDongSan34.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using System;
 using System.Xml;
 
 namespace LangBatDongSan34.Controllers
@@ -25,10 +26,12 @@ namespace LangBatDongSan34.Controllers
             List<News> lstNews = new List<News>();
 
             string xPathList = "//div[contains(@class, 'listchungkhoannew')]/div[contains(@class, 'tlitem box-category-item')]";
-            string xPathDetail = "//div[containt(@class, 'detail-content afcbc-body')]/p";
+            string xPathDetail = "//div[containt(@class, 'detail-content afcbc-body')]";
 
             try
             {
+                string[] splitLink = link.Split('/');
+                string domain = string.Join("/", splitLink.Take(3));
                 var web = new HtmlWeb();
                 var hd = web.Load(link);
                 string url = "";
@@ -70,18 +73,23 @@ namespace LangBatDongSan34.Controllers
                                     //    //    key2 = key2.Replace(",,", ",");
                                     //    news.MetaKeywords = string.Format(Constants.Constant.SEO_METAKEYWORDS, key1);
                                     //}
-                                    news.MetaKeywords = "a";
-                                    news.MetaDescription = "a";
+                                    news.MetaKeywords = "Constant.SEO_METAKEYWORDS";
                                     //if (string.IsNullOrEmpty(news.MetaDescription))
                                     //{
                                     //    news.MetaDescription = string.Format(Constants.Constant.SEO_METADESCRIPTION, news.MetaTitle.ToLower(), news.MetaTitle.ToLower());
                                     //}
+                                    news.MetaDescription = "Constant.SEO_METADESCRIPTION";
                                     news.NewsTypeId = 1;
-                                    //url = item.ChildNodes[1].Attributes["href"].Value;
 
-                                    //news = GetNewsDetail2(url, xPathDetail, news);
-                                    news.Short = "a";
-                                    news.Full = "a";
+                                    url = item.ChildNodes[1].ChildNodes[1].Attributes["href"].Value;
+
+                                    if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                                    {
+                                        url = domain + url;
+                                    }
+
+                                    news = GetNewsDetail2(url, xPathDetail, news);
+                                    
                                     news.LanguageId = 1;
                                     news.AllowComments = true;
                                     news.StartDate = null;
@@ -103,7 +111,7 @@ namespace LangBatDongSan34.Controllers
             }
             catch (Exception ex)
             {
-                //Logging.ErrorHandler("NewsController.GetListNewsItems", ex);
+                //Logging.ErrorHandler("NewsController.GetListNewsItems2", ex);
             }
 
             return lstNews;
@@ -116,6 +124,30 @@ namespace LangBatDongSan34.Controllers
                     .FirstOrDefault();
 
             return result;
+        }
+
+        private News GetNewsDetail2(string url, string xPathDetail, News news)
+        {
+            try
+            {
+                var web = new HtmlWeb();
+                var hd = web.Load(url);
+                #region Get Detail News
+                HtmlNodeCollection nc = hd.DocumentNode.SelectNodes(xPathDetail);
+
+                if (nc != null)
+                {
+                    news.Short = "a";
+                    news.Full = "a";
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                //Logging.ErrorHandler("NewsController.GetNewsDetail2", ex);
+            }
+
+            return news;
         }
     }
 }
