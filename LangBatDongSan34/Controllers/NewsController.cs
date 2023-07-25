@@ -26,7 +26,7 @@ namespace LangBatDongSan34.Controllers
             List<News> lstNews = new List<News>();
 
             string xPathList = "//div[contains(@class, 'listchungkhoannew')]/div[contains(@class, 'tlitem box-category-item')]";
-            string xPathDetail = "//div[containt(@class, 'detail-content afcbc-body')]";
+            string xPathDetail = "//div[contains(@class, 'detail-content afcbc-body')]/p";
 
             try
             {
@@ -80,6 +80,8 @@ namespace LangBatDongSan34.Controllers
                                     //}
                                     news.MetaDescription = "Constant.SEO_METADESCRIPTION";
                                     news.NewsTypeId = 1;
+                                    news.Short = item.ChildNodes[3].ChildNodes[3].ChildNodes[3].InnerHtml;
+
 
                                     url = item.ChildNodes[1].ChildNodes[1].Attributes["href"].Value;
 
@@ -137,8 +139,10 @@ namespace LangBatDongSan34.Controllers
 
                 if (nc != null)
                 {
-                    news.Short = "a";
-                    news.Full = "a";
+                    foreach (HtmlNode item in nc)
+                    {
+                        news.Full += item.InnerHtml + "\n";
+                    }
                 }
                 #endregion
             }
