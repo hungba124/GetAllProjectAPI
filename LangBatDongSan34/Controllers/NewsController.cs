@@ -1,9 +1,5 @@
 ﻿using HtmlAgilityPack;
-using LangBatDongSan34.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using System;
-using System.Xml;
 
 namespace LangBatDongSan34.Controllers
 {
