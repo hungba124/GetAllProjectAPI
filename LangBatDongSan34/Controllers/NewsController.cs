@@ -14,9 +14,15 @@ namespace LangBatDongSan34.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<News>>> GetAllNews()
+        {
+            return Ok(await _context.News.ToListAsync());
+        }
+
         //public virtual IList<News> GetListNewsItems2(string link)
-        [HttpGet("GetListNews")]
-        public async Task<ActionResult<List<News>>> GetListNewsItems2(string link)
+        [HttpGet("GetListNewsFromWeb")]
+        public async Task<ActionResult<List<News>>> GetListNewsItems(string link)
         {
             //Logging.Infor("Downloading news: " + link);
             List<News> lstNews = new List<News>();
@@ -86,7 +92,7 @@ namespace LangBatDongSan34.Controllers
                                         url = domain + url;
                                     }
 
-                                    news = GetNewsDetail2(url, xPathDetail, news);
+                                    news = GetNewsDetail(url, xPathDetail, news);
                                     
                                     news.LanguageId = 1;
                                     news.AllowComments = true;
@@ -98,6 +104,7 @@ namespace LangBatDongSan34.Controllers
                                         news.Published = true;
                                         //if (!string.IsNullOrEmpty(News.Contents))
                                         lstNews.Add(news);
+                                        _context.News.Add(news);
                                     }
                                 }
 
@@ -112,6 +119,7 @@ namespace LangBatDongSan34.Controllers
                 //Logging.ErrorHandler("NewsController.GetListNewsItems2", ex);
             }
 
+            await _context.SaveChangesAsync();
             return lstNews;
         }
     
@@ -124,7 +132,7 @@ namespace LangBatDongSan34.Controllers
             return result;
         }
 
-        private News GetNewsDetail2(string url, string xPathDetail, News news)
+        private News GetNewsDetail(string url, string xPathDetail, News news)
         {
             try
             {
